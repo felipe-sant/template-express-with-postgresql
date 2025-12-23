@@ -7,7 +7,10 @@
     "start": "node out/src/index.js",
     "build": "tsc -p tsconfig.json --outDir out",
     "dev": "nodemon --watch src --ext ts --exec \"ts-node src/index.ts\"",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "db:init": "docker-compose up -d",
+    "db:close": "docker-compose down -v",
+    "db:restart": "docker-compose down -v && docker-compose up -d"
   },
   "keywords": [],
   "author": "@felipe-sant",
