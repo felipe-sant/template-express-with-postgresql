@@ -7,7 +7,6 @@ class TestRoutes {
 
     private url: string = "/"
     private url_id: string = "/:id"
-    private url_test: string = "/_"
 
     constructor() {
         this.testController = new TestController()
@@ -42,9 +41,9 @@ class TestRoutes {
             this.testController.delete.bind(this.testController)
         )
 
-        // `GET | http://0.0.0.0:0000/api/test/_`
+        // `PROPFIND | http://0.0.0.0:0000/api/test/`
         this.router.propfind(
-            this.url_test,
+            this.url,
             this.testController.__test__.bind(this.testController)
         )
     }

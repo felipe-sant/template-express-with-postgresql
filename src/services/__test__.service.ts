@@ -1,11 +1,10 @@
-import TestRepository from "../repositories/__test__.repository"
+import TestRepository, { TestType } from "../repositories/__test__.repository"
 
 class TestService {
     private testRepository = new TestRepository()
 
-    async create(body: { text: string}) {
-        await this.testRepository.createNewTest(body)
-        
+    public async create(test: TestType) {
+        await this.testRepository.createNewTest(test)
         return {
             message: "Resource created successfully!"
         }
@@ -15,43 +14,39 @@ class TestService {
         const res = await this.testRepository.readTest()
         return {
             message: "Retrieved resources successfully!",
-            test: res
+            responses: res
         }
     }
 
-    async readOne(id: string) {
+    public async readOne(id: string) {
         const res = await this.testRepository.readTestPerID(id)
         return {
             message: `Retrieved resource with ID ${id} successfully!`,
-            test: res
+            responses: res
         }
     }
 
-    update(id: string, body: unknown, query?: unknown) {
+    public async update(id: string, test: Partial<TestType>) {
+        const obj: Partial<TestType> = {}
+
+        test.text ? obj.text = test.text : undefined
+        test.number ? obj.number = test.number : undefined
+
+        await this.testRepository.updateTest(obj, id)
         return {
             message: `Updated resource with ID ${id} successfully!`,
-            query: query,
-            body: body
         }
     }
 
-    patch(id: string, body: unknown, query?: unknown) {
+    public async delete(id: string) {
+        await this.testRepository.deleteTest(id)
         return {
-            message: `Patched resource with ID ${id} successfully!`,
-            query: query,
-            body: body
+            message: `Deleted resource with ID ${id} successfully!`
         }
     }
 
-    delete(id: string, query?: unknown) {
-        return {
-            message: `Deleted resource with ID ${id} successfully!`,
-            query: query
-        }
-    }
-
-    public __test__() {
-        return true
+    public async __test__() {
+        return (await this.testRepository.__test__())
     }
 }
 

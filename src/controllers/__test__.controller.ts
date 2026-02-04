@@ -9,7 +9,7 @@ class TestController {
      */
     public async create(req: Request, res: Response): Promise<void> {
         try {
-            const { text } = req.body
+            const { text, number } = req.body
 
             if (!text) {
                 res.status(401).json({ message: "text is required" })
@@ -21,7 +21,17 @@ class TestController {
                 return
             }
 
-            const result = await this.testService.create({ text })
+            if (!number) {
+                res.status(401).json({ message: "number is required" })
+                return
+            }
+
+            if (typeof number !== "number") {
+                res.status(401).json({ message: "The number must be of type number." })
+                return
+            }
+
+            const result = await this.testService.create({ text, number })
             res.status(201).json(result)
         } catch (error: unknown) {
             console.error("Error:", error)
@@ -64,16 +74,19 @@ class TestController {
         try {
             const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id
 
-            const query = req.query as Record<string, string>
-            // Caso usar o query usar da seguinte forma:
-            // const text = Array.isArray(query.text) ? query.text[0] : query.text
+            const { text, number } = req.body
 
-            const body = req.body
-            if (!body || Object.keys(body).length === 0) {
-                res.status(400).json({ message: "body is required!" })
+            if (text && typeof text !== "string") {
+                res.status(401).json({ message: "The text must be of type string." })
                 return
             }
-            const result = this.testService.update(id, body, query)
+
+            if (number && typeof number !== "number") {
+                res.status(401).json({ message: "The number must be of type number." })
+                return
+            }
+
+            const result = await this.testService.update(id, { text, number })
             res.status(200).json(result)
         } catch (error: unknown) {
             console.error("Error:", error)
@@ -88,11 +101,7 @@ class TestController {
         try {
             const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id
 
-            const query = req.query as Record<string, string>
-            // Caso usar o query usar da seguinte forma:
-            // const text = Array.isArray(query.text) ? query.text[0] : query.text
-
-            const result = this.testService.delete(id, query)
+            const result = await this.testService.delete(id)
             res.status(204).json(result)
         } catch (error: unknown) {
             console.error("Error:", error)
@@ -105,7 +114,7 @@ class TestController {
      */
     public async __test__(_: Request, res: Response) {
         try {
-            const testService = this.testService.__test__()
+            const testService = await this.testService.__test__()
             if (testService) {
                 res.sendStatus(200)
                 return
