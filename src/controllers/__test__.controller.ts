@@ -2,28 +2,55 @@ import { Request, Response } from "express";
 import TestService from "../services/__test__.service";
 
 class TestController {
-    private testService: TestService
-
-    constructor() {
-        this.testService = new TestService()
-    }
+    private testService = new TestService()
 
     /**
      * `POST | http://0.0.0.0:0000/api/test`
      */
     public async create(req: Request, res: Response): Promise<void> {
         try {
-            const query = req.query as Record<string, string>
-            // Caso usar o query usar da seguinte forma:
-            // const name = Array.isArray(query.name) ? query.name[0] : query.name
-            
-            const body = req.body
-            if (!body || Object.keys(body).length === 0) {
-                res.status(400).json({ message: "body is required!" })
+            const { text } = req.body
+
+            if (!text) {
+                res.status(401).json({ message: "text is required" })
                 return
             }
-            const result = this.testService.create(body, query)
+
+            if (typeof text !== "string") {
+                res.status(401).json({ message: "The text must be of type string." })
+                return
+            }
+
+            const result = await this.testService.create({ text })
             res.status(201).json(result)
+        } catch (error: unknown) {
+            console.error("Error:", error)
+            res.sendStatus(500)
+        }
+    }
+
+    /**
+     * `GET | http://0.0.0.0:0000/api/test`
+     */
+    public async read(req: Request, res: Response): Promise<void> {
+        try {
+            const result = await this.testService.read()
+            res.status(200).json(result)
+        } catch (error: unknown) {
+            console.error("Error:", error)
+            res.sendStatus(500)
+        }
+    }
+
+    /**
+     * `GET | http://0.0.0.0:0000/api/test/:id`
+     */
+    public async readOne(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id
+
+            const result = await this.testService.readOne(id)
+            res.status(200).json(result)
         } catch (error: unknown) {
             console.error("Error:", error)
             res.sendStatus(500)
@@ -39,7 +66,7 @@ class TestController {
 
             const query = req.query as Record<string, string>
             // Caso usar o query usar da seguinte forma:
-            // const name = Array.isArray(query.name) ? query.name[0] : query.name
+            // const text = Array.isArray(query.text) ? query.text[0] : query.text
 
             const body = req.body
             if (!body || Object.keys(body).length === 0) {
@@ -47,42 +74,6 @@ class TestController {
                 return
             }
             const result = this.testService.update(id, body, query)
-            res.status(200).json(result)
-        } catch (error: unknown) {
-            console.error("Error:", error)
-            res.sendStatus(500)
-        }
-    }
-
-    /**
-     * `GET | http://0.0.0.0:0000/api/test`
-     */
-    public async read(req: Request, res: Response): Promise<void> {
-        try {
-            const query = req.query as Record<string, string>
-            // Caso usar o query usar da seguinte forma:
-            // const name = Array.isArray(query.name) ? query.name[0] : query.name
-
-            const result = this.testService.read(query)
-            res.status(200).json(result)
-        } catch (error: unknown) {
-            console.error("Error:", error)
-            res.sendStatus(500)
-        }
-    }
-
-    /**
-     * `GET | http://0.0.0.0:0000/api/test/:id`
-     */
-    public async readOne(req: Request, res: Response): Promise<void> {
-        try {
-            const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id
-
-            const query = req.query as Record<string, string>
-            // Caso usar o query usar da seguinte forma:
-            // const name = Array.isArray(query.name) ? query.name[0] : query.name
-
-            const result = this.testService.readOne(id, query)
             res.status(200).json(result)
         } catch (error: unknown) {
             console.error("Error:", error)
@@ -99,7 +90,7 @@ class TestController {
 
             const query = req.query as Record<string, string>
             // Caso usar o query usar da seguinte forma:
-            // const name = Array.isArray(query.name) ? query.name[0] : query.name
+            // const text = Array.isArray(query.text) ? query.text[0] : query.text
 
             const result = this.testService.delete(id, query)
             res.status(204).json(result)

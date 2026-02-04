@@ -1,23 +1,29 @@
+import TestRepository from "../repositories/__test__.repository"
+
 class TestService {
-    create(body: unknown, query?: unknown) {
+    private testRepository = new TestRepository()
+
+    async create(body: { text: string}) {
+        await this.testRepository.createNewTest(body)
+        
         return {
-            message: "Resource created successfully!",
-            query: query,
-            body: body
+            message: "Resource created successfully!"
         }
     }
 
-    read(query?: unknown) {
+    async read() {
+        const res = await this.testRepository.readTest()
         return {
             message: "Retrieved resources successfully!",
-            query: query
+            test: res
         }
     }
 
-    readOne(id: string, query?: unknown) {
+    async readOne(id: string) {
+        const res = await this.testRepository.readTestPerID(id)
         return {
             message: `Retrieved resource with ID ${id} successfully!`,
-            query: query
+            test: res
         }
     }
 

@@ -10,5 +10,8 @@
         "package.json": false,
         "tsconfig.json": true,
         "LICENSE": true,
+    },
+    "material-icon-theme.files.associations": {
+        "*.repository.ts": "database"
     }
 }
