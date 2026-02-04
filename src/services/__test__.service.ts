@@ -29,8 +29,8 @@ class TestService {
     public async update(id: string, test: Partial<TestType>) {
         const obj: Partial<TestType> = {}
 
-        test.text ? obj.text = test.text : undefined
-        test.number ? obj.number = test.number : undefined
+        if (test.text) obj.text = test.text
+        if (test.number) obj.number = test.number
 
         await this.testRepository.updateTest(obj, id)
         return {
