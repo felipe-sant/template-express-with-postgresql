@@ -18,9 +18,6 @@ COPY --from=builder /app/out ./out
 
 COPY package.json ./
 
-# Remover caso não tenha o .env
-COPY .env ./
-
 RUN npm install --omit=dev
 
 EXPOSE 3000
